@@ -2,6 +2,7 @@
 
 /**
  * main -  prints _putchar, followed by a new line
+ * *by YMS
  * Return: Always 0 (Success)
  */
 int main(void)
