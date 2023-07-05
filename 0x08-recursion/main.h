@@ -1,20 +1,16 @@
-#include "main.h"
+#ifndef _MAIN_H_
+#define _MAIN_H_
 
-/**
- * _puts_recursion - print a string.
- * @s: pointer to char
- * Return: No.
- */
+void _puts_recursion(char *s);
+void _print_rev_recursion(char *s);
+void _putchar(char c);
+int _strlen_recursion(char *s);
+int factorial(int n);
+int _pow_recursion(int x, int y);
+int _sqrt_recursion(int n);
+int _sqrt(int n, int i);
+int wildcmp(char *s1, char *s2);
+int is_prime_number(int n);
+int is_palindrome(char *s);
 
-void _puts_recursion(char *s)
-{
-	if (*s != '\0')
-	{
-		_putchar(*s);
-		_puts_recursion(s + 1);
-	}
-	else
-	{
-	_putchar('\n');
-	}
-}
+#endif}
