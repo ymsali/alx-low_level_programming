@@ -9,9 +9,10 @@
  */
 int count_word(char *s)
 {
-	int flag = 0;
-	int c;
-	int w = 0;
+	int flag, c, w;
+
+	flag = 0;
+	w = 0;
 
 	for (c = 0; s[c] != '\0'; c++)
 	{
@@ -24,11 +25,10 @@ int count_word(char *s)
 		}
 	}
 
-	return w;
+	return (w);
 }
-
 /**
- * strtow - splits a string into words
+ * **strtow - splits a string into words
  * @str: string to split
  *
  * Return: pointer to an array of strings (Success)
@@ -36,58 +36,42 @@ int count_word(char *s)
  */
 char **strtow(char *str)
 {
-	if (str == NULL || *str == '\0')
-		return NULL;
+	char **matrix, *tmp;
+	int i, k = 0, len = 0, words, c = 0, start, end;
 
-	int len = 0;
-	while (str[len] != '\0')
+	while (*(str + len))
 		len++;
-
-	int words = count_word(str);
+	words = count_word(str);
 	if (words == 0)
-		return NULL;
+		return (NULL);
 
-	char **matrix = malloc(sizeof(char *) * (words + 1));
+	matrix = (char **) malloc(sizeof(char *) * (words + 1));
 	if (matrix == NULL)
-		return NULL;
-
-	int i, k = 0, c = 0, start = 0, end;
+		return (NULL);
 
 	for (i = 0; i <= len; i++)
 	{
 		if (str[i] == ' ' || str[i] == '\0')
 		{
-			if (c > 0)
+			if (c)
 			{
 				end = i;
-				char *tmp = malloc(sizeof(char) * (c + 1));
+				tmp = (char *) malloc(sizeof(char) * (c + 1));
 				if (tmp == NULL)
-				{
-					// Free memory if allocation fails
-					for (int j = 0; j < k; j++)
-						free(matrix[j]);
-					free(matrix);
-					return NULL;
-				}
-
-				int idx;
-				for (idx = start; idx < end; idx++)
-					tmp[idx - start] = str[idx];
-				tmp[idx - start] = '\0';
-				matrix[k] = tmp;
+					return (NULL);
+				while (start < end)
+					*tmp++ = str[start++];
+				*tmp = '\0';
+				matrix[k] = tmp - c;
 				k++;
 				c = 0;
 			}
 		}
-		else if (c == 0)
+		else if (c++ == 0)
 			start = i;
-
-		if (str[i] != ' ')
-			c++;
 	}
 
 	matrix[k] = NULL;
 
-	return matrix;
+	return (matrix);
 }
-
