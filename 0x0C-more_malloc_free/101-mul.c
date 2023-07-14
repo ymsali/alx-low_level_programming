@@ -2,80 +2,67 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 /**
- * _is_zero - determines if any number is zero
- * @argv: argument vector.
+ * is_zero - determines if a number is zero
+ * @num: number as a string
  *
- * Return: no return.
+ * Return: 1 if the number is zero, 0 otherwise.
  */
-void _is_zero(char *argv[])
+int is_zero(const char *num)
 {
-	int i, isn1 = 1, isn2 = 1;
-
-	for (i = 0; argv[1][i]; i++)
-		if (argv[1][i] != '0')
-		{
-			isn1 = 0;
-			break;
-		}
-
-	for (i = 0; argv[2][i]; i++)
-		if (argv[2][i] != '0')
-		{
-			isn2 = 0;
-			break;
-		}
-
-	if (isn1 == 1 || isn2 == 1)
+	for (int i = 0; num[i] != '\0'; i++)
 	{
-		printf("0\n");
-		exit(0);
+		if (num[i] != '0')
+			return 0;
 	}
+
+	return 1;
 }
 
 /**
- * _initialize_array - set memery to zero in a new array
- * @ar: char array.
- * @lar: length of the char array.
+ * initialize_array - initializes an array with zeros
+ * @arr: array to initialize
+ * @length: length of the array
  *
- * Return: pointer of a char array.
+ * Return: pointer to the initialized array.
  */
-char *_initialize_array(char *ar, int lar)
+char *initialize_array(char *arr, int length)
 {
-	int i = 0;
+	for (int i = 0; i < length; i++)
+		arr[i] = '0';
 
-	for (i = 0; i < lar; i++)
-		ar[i] = '0';
-	ar[lar] = '\0';
-	return (ar);
+	arr[length] = '\0';
+	return arr;
 }
 
 /**
- * _checknum - determines length of the number
- * and checks if number is in base 10.
- * @argv: arguments vector.
- * @n: row of the array.
+ * check_number - checks if a string represents a valid number in base 10
+ * @num: number as a string
  *
  * Return: length of the number.
+ * If the number is invalid, it prints an error message and exits with status 98.
  */
-int _checknum(char *argv[], int n)
+int check_number(const char *num)
 {
-	int ln;
+	int length = strlen(num);
 
-	for (ln = 0; argv[n][ln]; ln++)
-		if (!isdigit(argv[n][ln]))
+	for (int i = 0; i < length; i++)
+	{
+		if (!isdigit(num[i]))
 		{
 			printf("Error\n");
 			exit(98);
 		}
+	}
 
-	return (ln);
+	return length;
 }
 
 /**
  * main - Entry point.
- * program that multiplies two positive numbers.
+ * A program that multiplies two positive numbers.
  * @argc: number of arguments.
  * @argv: arguments vector.
  *
@@ -83,44 +70,84 @@ int _checknum(char *argv[], int n)
  */
 int main(int argc, char *argv[])
 {
-	int ln1, ln2, lnout, add, addl, i, j, k, ca;
-	char *nout;
-
 	if (argc != 3)
-		printf("Error\n"), exit(98);
-	ln1 = _checknum(argv, 1), ln2 = _checknum(argv, 2);
-	_is_zero(argv), lnout = ln1 + ln2, nout = malloc(lnout + 1);
-	if (nout == NULL)
-		printf("Error\n"), exit(98);
-	nout = _initialize_array(nout, lnout);
-	k = lnout - 1, i = ln1 - 1, j = ln2 - 1, ca = addl = 0;
+	{
+		printf("Error\n");
+		exit(98);
+	}
+
+	int length1 = check_number(argv[1]);
+	int length2 = check_number(argv[2]);
+
+	if (is_zero(argv[1]) || is_zero(argv[2]))
+	{
+		printf("0\n");
+		return 0;
+	}
+
+	int outputLength = length1 + length2;
+	char *output = malloc((outputLength + 1) * sizeof(char));
+
+	if (output == NULL)
+	{
+		printf("Error\n");
+		exit(98);
+	}
+
+	initialize_array(output, outputLength);
+
+	int k = outputLength - 1;
+	int i = length1 - 1;
+	int j = length2 - 1;
+	int carry = 0;
+	int add;
+
 	for (; k >= 0; k--, i--)
 	{
 		if (i < 0)
 		{
-			if (addl > 0)
+			if (carry > 0)
 			{
-				add = (nout[k] - '0') + addl;
+				add = (output[k] - '0') + carry;
+
 				if (add > 9)
-					nout[k - 1] = (add / 10) + '0';
-				nout[k] = (add % 10) + '0';
+					output[k - 1] = (add / 10) + '0';
+
+				output[k] = (add % 10) + '0';
 			}
-			i = ln1 - 1, j--, addl = 0, ca++, k = lnout - (1 + ca);
+
+			i = length1 - 1;
+			j--;
+			carry = 0;
+			k = outputLength - (1 + j);
 		}
+
 		if (j < 0)
 		{
-			if (nout[0] != '0')
+			if (output[0] != '0')
 				break;
-			lnout--;
-			free(nout), nout = malloc(lnout + 1), nout = _initialize_array(nout, lnout);
-			k = lnout - 1, i = ln1 - 1, j = ln2 - 1, ca = addl = 0;
+
+			outputLength--;
+			free(output);
+			output = malloc((outputLength + 1) * sizeof(char));
+			initialize_array(output, outputLength);
+			k = outputLength - 1;
+			i = length1 - 1;
+			j = length2 - 1;
+			carry = 0;
 		}
+
 		if (j >= 0)
 		{
-			add = ((argv[1][i] - '0') * (argv[2][j] - '0')) + (nout[k] - '0') + addl;
-			addl = add / 10, nout[k] = (add % 10) + '0';
+			add = ((argv[1][i] - '0') * (argv[2][j] - '0')) + (output[k] - '0') + carry;
+			carry = add / 10;
+			output[k] = (add % 10) + '0';
 		}
 	}
-	printf("%s\n", nout);
-	return (0);
+
+	printf("%s\n", output);
+	free(output);
+
+	return 0;
 }
+
